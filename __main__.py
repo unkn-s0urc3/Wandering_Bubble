@@ -18,6 +18,9 @@ radius = 50
 x, y = width // 2, height // 2
 speed_x, speed_y = 5, 5
 
+# List to store previous positions
+trail = []
+
 # Main program loop
 running = True
 while running:
@@ -36,11 +39,25 @@ while running:
     if y - radius < 0 or y + radius > height:
         speed_y = -speed_y
 
-    # Clear the screen
+    # Add current position to trail list
+    trail.append((x, y))
+    # Keep only the last 50 positions in the trail list
+    trail = trail[-50:]
+
+    # Clear the screen with a white color to gradually fade out the previous trail
     screen.fill(WHITE)
 
-    # Draw the bubble
-    pygame.draw.circle(screen, BLUE, (x, y), radius)
+    # Draw the trail
+    for pos in trail:
+        # Calculate alpha value based on position in the trail
+        alpha = 255 - int(200 * trail.index(pos) / len(trail))
+        # Draw semi-transparent circle at each position in the trail
+        pygame.draw.circle(screen, (0, 128, 255, alpha), pos, radius)
+
+    # Draw the bubble with gradient fill at the current position
+    pygame.draw.circle(screen, (0, 128, 255), (x, y), radius)  # Outer color
+    pygame.draw.circle(screen, (135, 206, 250), (x, y), int(radius * 0.9))  # Middle color
+    pygame.draw.circle(screen, (173, 216, 230), (x, y), int(radius * 0.6))  # Inner color
 
     # Update the display
     pygame.display.flip()
